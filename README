@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------------
+|	g15rss		-		RSS feed reader for the G15 keyboard                  |
+-------------------------------------------------------------------------------
+
+To build type 'make'.
+
+To install type 'make install'. (As root).
+To uninstall type 'make uninstall'. (As root).
+
+Usage:
+
+	Must be run whilst g15daemon is running.
+	Type 'g15rss' to start the program, reading in from the configuration file in '/etc/g15rssrc'.
+	Typing 'g15rss -c /path/to/file' allows you to specify the location of another configuration file.
+	The configuration file is just a list of RSS urls separated by newline charactors.
+	The program will cycle through the RSS feeds and display the 5 most recent posts.
+
+Bugs:
+	Send a report to dean.birch0@gmail.com
