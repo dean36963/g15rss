@@ -31,7 +31,7 @@ void g15_wait(int seconds);
 int main(int argc, char *argv[])
 {
 	g15canvas *canvas;
-	int i,length=0;
+	int i,j,length=0;
 	int g15screen_fd;
 	int fail=0;
 	int wait_time=DEFAULT_WAIT_TIME;
@@ -42,10 +42,12 @@ int main(int argc, char *argv[])
 	char timestr[80];
 	FILE *file;
 	char **list;
+	int numberoffeeds=0;
 
 	//initialise filename string
 	filename = (char*) malloc(MAX_STR_LENGTH*sizeof(char));
-	sprintf(filename,"/etc/g15rssrc");
+	sprintf(filename,"%s.g15rssrc",getenv("HOME"));
+
 	//init buffer
 	buffer = (char*) malloc(MAX_STR_LENGTH*sizeof(char));
 
@@ -97,15 +99,28 @@ int main(int argc, char *argv[])
 		printf("Could not read %s.\nMake sure it exists and contains RSS urls.\n",filename);
 		return -2;
 	}
-	while( fgets(buffer,BUFSIZ,file) ) length++;
-	rewind(file);
-	list = (char**) malloc( (size_t)length*sizeof(char*) );
-	if(list == NULL) return -3;
-	for(i=0;i<length;i++)
+	while( fgets(buffer,BUFSIZ,file) )
 	{
-		list[i] = (char*) malloc( (size_t)MAX_STR_LENGTH*sizeof(char) );
-		if(list[i]==NULL) return -4;
-		fgets(list[i],MAX_STR_LENGTH,file);
+		if(buffer[0]!='#')
+			numberoffeeds++;
+		length++;
+	}
+printf("number of feeds should be %d\n",numberoffeeds);
+	rewind(file);
+	list = (char**) malloc( (size_t)numberoffeeds*sizeof(char*) );
+	if(list == NULL) return -3;
+	for(i=0,j=0;i<length;i++)
+	{
+		fgets(buffer,BUFSIZ,file);
+		if(buffer[0]!='#')
+		{
+			list[j] = (char*) malloc( (size_t)MAX_STR_LENGTH*sizeof(char) );
+			if(list[j]==NULL) return -4;
+			//fgets(list[i],MAX_STR_LENGTH,file);
+			strncpy(list[j],buffer,MAX_STR_LENGTH);
+			printf("Feed number %d = %s\n",j,list[j]);
+			j++;
+		}
 	}
 	
 
@@ -129,10 +144,11 @@ int main(int argc, char *argv[])
 	for(i=0;1;i++)
 	{
 		//reset i if it gets too big!
-		if(i>=length) i=0;
+		if(i>=numberoffeeds) i=0;
+		printf("Displaying feed number %d\n",i);
 		//get news feed and get info from it!
 		fail = getRssCurl("/tmp/g15rssfeed",list[i]);
-		if(fail == -1) break;
+		if(fail == -1) break;//is this break doing what i want it to do?
 		probeRssFeed(&rss);
 		
 		time(&rawtime);

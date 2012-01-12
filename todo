@@ -1,5 +1,5 @@
 TODO list:
 
-	Default conf file to be in ~/.g15rssrc not in /etc/.
-	Allow for # comments in conf file.
+	ACTUALLY TEST that it works for more RSS feeds.
+	remove printfs
 	
