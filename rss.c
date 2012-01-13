@@ -24,6 +24,12 @@ int getRssCurl(char *filename, char *url)
 		curl_easy_cleanup(curl);
 	}
 	fclose(savehere);
+	if(res != 0)
+	{
+		printf("There was an error downloading!\n");
+		printf("Error = %d\n",res);
+		return -1;
+	}
 	return 0;
 }
 
@@ -52,6 +58,11 @@ int probeRssFeed(struct rssfeed *rss)
 			printf("buffer is null wtF!\n");
 			loop=0;
 		}
+		if(buffer=="EOF")
+		{
+			printf("Buffer is EOF now!\n");
+			return -2;
+		}
 		start = strstr(buffer,"<title>");
 		if(start!=NULL)
 		{
@@ -70,6 +81,11 @@ int probeRssFeed(struct rssfeed *rss)
 			printf("buffer is null wtF!\n");
 			loop=0;
 		}
+		if(buffer=="EOF")
+		{
+			printf("Buffer is empty aborting!\n");
+			return -2;
+		}
 		start = strstr(buffer,"<item>");
 		if(start!=NULL)
 		{
@@ -86,6 +102,11 @@ int probeRssFeed(struct rssfeed *rss)
 		{
 			printf("buffer is null wtF!\n");
 			loop=0;
+		}
+		if(buffer=="EOF")
+		{
+			printf("BUFF = EOF\n");
+			return -2;
 		}
 		start = strstr(buffer,"<title>");
 		if(start!=NULL)

@@ -146,15 +146,28 @@ printf("number of feeds should be %d\n",numberoffeeds);
 		//reset i if it gets too big!
 		if(i>=numberoffeeds) i=0;
 		printf("Displaying feed number %d\n",i);
-		//get news feed and get info from it!
-		fail = getRssCurl("/tmp/g15rssfeed",list[i]);
-		if(fail == -1) break;//is this break doing what i want it to do?
-		probeRssFeed(&rss);
 		
+		//get time
 		time(&rawtime);
 		realtime = gmtime(&rawtime);
 		sprintf(timestr,"%2d:%02d",  (realtime->tm_hour)%24,realtime->tm_min);
 
+		//get news feed and get info from it!
+		fail = getRssCurl("/tmp/g15rssfeed",list[i]);
+		if(fail == -1)
+		{
+			printf("Continuing to next loop iter!\n");
+			g15r_clearScreen(canvas,0x00);
+			g15r_renderString(canvas,(unsigned char*)timestr,0,G15_TEXT_MED,132,0);
+			g15r_renderString(canvas,(unsigned char*)"Error Downloading",0,G15_TEXT_HUGE,0,0);
+			//send to g15daemon
+			g15_send(g15screen_fd,(char*)canvas->buffer,G15_BUFFER_LEN);
+			//wait
+			g15_wait(wait_time);
+			continue;
+		}
+		probeRssFeed(&rss);
+		
 		//clear screen
 		g15r_clearScreen(canvas,0x00);
 		//write title, 5 most recent posts and time
