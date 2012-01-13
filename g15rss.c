@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 			numberoffeeds++;
 		length++;
 	}
-printf("number of feeds should be %d\n",numberoffeeds);
+	//printf("number of feeds should be %d\n",numberoffeeds);
 	rewind(file);
 	list = (char**) malloc( (size_t)numberoffeeds*sizeof(char*) );
 	if(list == NULL) return -3;
@@ -118,7 +118,7 @@ printf("number of feeds should be %d\n",numberoffeeds);
 			if(list[j]==NULL) return -4;
 			//fgets(list[i],MAX_STR_LENGTH,file);
 			strncpy(list[j],buffer,MAX_STR_LENGTH);
-			printf("Feed number %d = %s\n",j,list[j]);
+			//printf("Feed number %d = %s\n",j,list[j]);
 			j++;
 		}
 	}
@@ -145,7 +145,7 @@ printf("number of feeds should be %d\n",numberoffeeds);
 	{
 		//reset i if it gets too big!
 		if(i>=numberoffeeds) i=0;
-		printf("Displaying feed number %d\n",i);
+		//printf("Displaying feed number %d\n",i);
 		
 		//get time
 		time(&rawtime);
