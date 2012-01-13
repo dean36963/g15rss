@@ -3,7 +3,6 @@ all: rss
 
 install: all
 	cp g15rss /usr/bin/
-#	touch /etc/g15rssrc
 
 uninstall:
 	rm g15rss /usr/bin/g15rss
