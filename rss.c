@@ -33,13 +33,15 @@ int getRssCurl(char *filename, char *url)
 	return 0;
 }
 
-
+//I dont use this anymore, but scared to delete it!
+/*
 int probeRssFeed(struct rssfeed *rss)
 {
 	int loop=1,i;
 	FILE *file;
 	char *buffer;
 	char *start,*end,*storehere;
+
 
 	buffer = (char*)malloc(BUFSIZ*sizeof(char));
 
@@ -125,5 +127,5 @@ int probeRssFeed(struct rssfeed *rss)
 	free(buffer);
 	return 0;
 }
-
+*/
 

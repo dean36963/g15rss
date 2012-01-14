@@ -1,7 +1,7 @@
-all: rss
-	gcc g15rss.c rss.o -lg15daemon_client -lg15render -lpthread -lm -lrt -o g15rss -Wunused -lcurl
+all: rss parse
+	gcc parse.o g15rss.c  rss.o -lg15daemon_client -lg15render -lpthread -lm -lrt -o g15rss -Wunused -lcurl `xml2-config --cflags` `xml2-config --libs`
 
-install: all
+install: 
 	cp g15rss /usr/bin/
 
 uninstall:
@@ -12,4 +12,8 @@ rss:
 
 
 clean:
-	rm g15rss rss.o
+	rm g15rss rss.o parse.o
+
+parse:
+	gcc -c `xml2-config --cflags` `xml2-config --libs` parse.c
+

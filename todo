@@ -1,6 +1,5 @@
 TODO list:
 
-remove printfs
-Test on more feeds and test if crashes, i dont think it does tho	
-use an xml parser?
-does it still allow for seperate conf files?
+clean up
+test on more feeds
+reduce download frequency, keeping many files, or keep in memory

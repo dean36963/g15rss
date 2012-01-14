@@ -38,10 +38,9 @@ int main(int argc, char *argv[])
 	char *filename,*buffer;
 	time_t rawtime;
 	struct tm *realtime;
-	struct rssfeed rss;
 	char timestr[80];
 	FILE *file;
-	char **list;
+	char **list,**rssfeeds;
 	int numberoffeeds=0;
 
 	//initialise filename string
@@ -60,18 +59,19 @@ int main(int argc, char *argv[])
 			printf("-h,--help\t\tShows this help page.\n");
 			printf("-v,--version\t\tPrints version number.\n");
 			printf("-c,--conf [path/to/file]\tUse this configuration file.\n");
+			printf("-w,--wait [time (s)]\tSpecify refresh time.\n");
 			printf("Configuration files are a list of RSS urls.\n");
 			printf("Send bug reports dean.birch0@gmail.com\n");
 			return 0;
 		}
 		else if(0==strncmp(argv[i],"-v",2)||0==strncmp(argv[i],"--version",9))
 		{	//prints version number
-			printf("0.2\n");
+			printf("0.3\n");
 			return 0;
 		}
 		else if(0==strncmp(argv[i],"-c",2)||0==strncmp(argv[i],"--conf",6))
 		{	//allowing to specify filename
-			if( i+1 <= argc )
+			if( i+1 < argc )
 			{
 				filename = argv[i+1];
 			}
@@ -83,7 +83,10 @@ int main(int argc, char *argv[])
 		}
 		else if(0==strncmp(argv[i],"-w",2)||0==strncmp(argv[i],"--wait",6))
 		{	//sets waiting time between refreshing
-			if( i+1 <= argc) wait_time=DEFAULT_WAIT_TIME;
+			if( i+1 < argc)
+			{
+				wait_time = atoi(argv[i+1]);
+			}
 			else
 			{
 				printf("-w/--wait should be followed by the wait time.\n");
@@ -91,6 +94,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
+	printf("Waittime=%d\n",wait_time);
 
 	//opening conf file
 	file = fopen(filename,"r");
@@ -122,6 +126,10 @@ int main(int argc, char *argv[])
 			j++;
 		}
 	}
+
+	//initialise the feeds strings need 6 (1title+5feeds)
+	rssfeeds = (char**) malloc( 6*sizeof(char*) );
+	for(i=0;i<6;i++) rssfeeds[i] = (char*) malloc( 128 * sizeof(char) );
 	
 
 
@@ -166,17 +174,21 @@ int main(int argc, char *argv[])
 			g15_wait(wait_time);
 			continue;
 		}
-		probeRssFeed(&rss);
+		//parsing!
+		streamFile("/tmp/g15rssfeed",rssfeeds);
+		xmlCleanupParser();
+		xmlMemoryDump();
+		//probeRssFeed(&rss); //old parse fn
 		
 		//clear screen
 		g15r_clearScreen(canvas,0x00);
 		//write title, 5 most recent posts and time
-		g15r_renderString(canvas,(unsigned char*)rss.title,		0, G15_TEXT_MED,	0,0);
-		g15r_renderString(canvas,(unsigned char*)rss.feeds,		0, G15_TEXT_SMALL,	0,9);
-		g15r_renderString(canvas,(unsigned char*)rss.feeds+80,	0, G15_TEXT_SMALL,	0,15);
-		g15r_renderString(canvas,(unsigned char*)rss.feeds+160, 0, G15_TEXT_SMALL,	0,21);
-		g15r_renderString(canvas,(unsigned char*)rss.feeds+240, 0, G15_TEXT_SMALL,	0,27);
-		g15r_renderString(canvas,(unsigned char*)rss.feeds+320, 0, G15_TEXT_SMALL,	0,33);
+		g15r_renderString(canvas,(unsigned char*)rssfeeds[0],0,G15_TEXT_MED,0,0);
+		g15r_renderString(canvas,(unsigned char*)rssfeeds[1],0,G15_TEXT_SMALL,0,9);
+		g15r_renderString(canvas,(unsigned char*)rssfeeds[2],0,G15_TEXT_SMALL,0,15);
+		g15r_renderString(canvas,(unsigned char*)rssfeeds[3],0,G15_TEXT_SMALL,0,21);
+		g15r_renderString(canvas,(unsigned char*)rssfeeds[4],0,G15_TEXT_SMALL,0,27);
+		g15r_renderString(canvas,(unsigned char*)rssfeeds[5],0,G15_TEXT_SMALL,0,33);
 		g15r_renderString(canvas,(unsigned char*)timestr,		0, G15_TEXT_MED,	132,0);
 		//send to g15daemon
 		g15_send(g15screen_fd,(char*)canvas->buffer,G15_BUFFER_LEN);
